@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Casino Royale - Sloty i Ruletka</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: #000000;
+            font-family: 'Montserrat', sans-serif;
+            flex-wrap: wrap;
+            gap: 40px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .slot-machine, .roulette {
+            background: #ffffff;
+            padding: 4vw;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+            text-align: center;
+            width: 600px;
+            max-width: 90%;
+            border: 1px solid #e74c3c;
+            position: relative;
+            box-sizing: border-box;
+        }
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 6vw;
+            font-weight: 700;
+            color: #000000;
+            margin: 0 0 25px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-shadow: 0 0 5px rgba(231, 76, 60, 0.3);
+            position: relative;
+        }
+        #budget, #roulette-budget {
+            font-size: 4vw;
+            color: #ffffff;
+            font-weight: 700;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 1vw 2vw;
+            border-radius: 8px;
+            z-index: 10;
+            text-align: center;
+        }
+        .reels {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            background: #ecf0f1;
+            padding: 3vw;
+            border-radius: 10px;
+        }
+        .reel {
+            width: 20vw;
+            height: 20vw;
+            background: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 8vw;
+            border: 2px solid #bdc3c7;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: all 0.1s ease;
+        }
+        button {
+            padding: 1vw 2vw;
+            font-size: 4vw;
+            background: #000000;
+            color: #ffffff;
+            border: 1px solid #e74c3c;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+            margin: 5px;
+        }
+        button:hover {
+            background: #e74c3c;
+            transform: translateY(-2px);
+        }
+        button:disabled {
+            background: #7f8c8d;
+            border: none;
+            cursor: not-allowed;
+            transform: none;
+        }
+        #result, #roulette-result {
+            margin-top: 2vw;
+            font-size: 5vw;
+            font-weight: 700;
+            color: #000000;
+        }
+        .stake-buttons, .roulette-stake-buttons {
+            margin: 2vw 0;
+            display: flex;
+            justify-content: center;
+            gap: 5vw;
+            flex-wrap: wrap;
+        }
+        .stake, .roulette-stake {
+            padding: 1vw 2vw;
+            font-size: 3vw;
+            background: #bdc3c7;
+            color: #000000;
+            border: none;
+        }
+        .stake:hover, .roulette-stake:hover {
+            background: #e74c3c;
+            color: #ffffff;
+        }
+        .selected {
+            background: #e74c3c;
+            color: #ffffff;
+            border: 1px solid #000000;
+        }
+        .selected:hover {
+            background: #c0392b;
+        }
+        .roulette-table {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 2vw;
+            background: #2ecc71;
+            padding: 2vw;
+            border-radius: 10px;
+            margin-bottom: 2vw;
+        }
+        .roulette-option {
+            padding: 2vw;
+            font-size: 4vw;
+            font-weight: 700;
+            color: #ffffff;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .roulette-option.red { background: #e74c3c; }
+        .roulette-option.black { background: #2c3e50; }
+        .roulette-option.green { background: #27ae60; }
+        .roulette-option.range { background: #3498db; }
+        .roulette-option:hover { transform: scale(1.05); }
+        .roulette-option.selected { border: 2px solid #ffd700; }
+        .roulette-display {
+            width: 40vw;
+            height: 20vw;
+            background: #ecf0f1;
+            border-radius: 10px;
+            margin: 5vw auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 5vw;
+            font-weight: 700;
+            border: 2px solid #e74c3c;
+            transition: background 0.5s ease;
+        }
+        .roulette-history {
+            margin-top: 2vw;
+            font-size: 3vw;
+            color: #000000;
+            text-align: left;
+        }
+        .roulette-history h3 {
+            font-size: 4vw;
+            margin-bottom: 10px;
+        }
+        .roulette-history ul {
+            list-style: none;
+            padding: 0;
+        }
+        .roulette-history li {
+            margin: 1vw 0;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 8vw;
+            }
+            .reels {
+                flex-direction: column;
+                gap: 5vw;
+            }
+            .reel {
+                width: 40vw;
+                height: 40vw;
+            }
+            .roulette-table {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .roulette-display {
+                width: 60vw;
+                height: 30vw;
+            }
+            button, .stake-buttons button, .roulette-stake-buttons button {
+                font-size: 5vw;
+                padding: 1.5vw 3vw;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="budget">Budżet: 5000 $</div>
+
+    <div class="slot-machine">
+        <h1>Casino Royale - Sloty</h1>
+        <div class="reels">
+            <div class="reel" id="reel1">?</div>
+            <div class="reel" id="reel2">?</div>
+            <div class="reel" id="reel3">?</div>
+        </div>
+        <div class="stake-buttons">
+            <button onclick="setStake(10)" class="stake selected">10 $</button>
+            <button onclick="setStake(20)" class="stake">20 $</button>
+            <button onclick="setStake(50)" class="stake">50 $</button>
+            <button onclick="setStake(250)" class="stake">250 $</button>
+            <button onclick="setStake(500)" class="stake">500 $</button>
+        </div>
+        <button id="spinButton" onclick="spin()">Zakręć</button>
+        <div id="result"></div>
+    </div>
+
+    <div class="roulette">
+        <h1>Casino Royale - Ruletka</h1>
+        <div class="roulette-display" id="rouletteDisplay">?</div>
+        <div class="roulette-table">
+            <div class="roulette-option red" onclick="setRouletteBet('red')" id="redBet">Czerwony</div>
+            <div class="roulette-option black" onclick="setRouletteBet('black')" id="blackBet">Czarny</div>
+            <div class="roulette-option green" onclick="setRouletteBet('green')" id="greenBet">Zielony</div>
+            <div class="roulette-option range" onclick="setRouletteBet('1-20')" id="range1Bet">1-20</div>
+            <div class="roulette-option range" onclick="setRouletteBet('21-40')" id="range2Bet">21-40</div>
+        </div>
+        <div class="roulette-stake-buttons">
+            <button onclick="setRouletteStake(10)" class="roulette-stake selected">10 $</button>
+            <button onclick="setRouletteStake(20)" class="roulette-stake">20 $</button>
+            <button onclick="setRouletteStake(50)" class="roulette-stake">50 $</button>
+            <button onclick="setRouletteStake(250)" class="roulette-stake">250 $</button>
+            <button onclick="setRouletteStake(500)" class="roulette-stake">500 $</button>
+        </div>
+        <button id="rouletteSpinButton" onclick="spinRoulette()">Zakręć ruletką</button>
+        <div id="roulette-result"></div>
+        <div class="roulette-history">
+            <h3>Ostatnie 5 losowań:</h3>
+            <ul id="historyList"></ul>
+        </div>
+    </div>
+
+    <script>
+        // Kod dla slotów
+        const symbols = ['🍒', '🍋', '🔔', '💎', '7'];
+        const spinButton = document.getElementById('spinButton');
+        const reel1 = document.getElementById('reel1');
+        const reel2 = document.getElementById('reel2');
+        const reel3 = document.getElementById('reel3');
+        const result = document.getElementById('result');
+        const budgetDisplay = document.getElementById('budget');
+        let budget = 5000;
+        let currentStake = 10;
+
+        function getRandomSymbol() {
+            return symbols[Math.floor(Math.random() * symbols.length)];
+        }
+
+        function updateBudget() {
+            budgetDisplay.textContent = `Budżet: ${budget} $`;
+            document.getElementById('roulette-budget').textContent = `Budżet: ${budget} $`;
+            if (budget < currentStake) {
+                spinButton.disabled = true;
+                result.textContent = 'Brak środków! Koniec gry.';
+                result.style.color = '#e74c3c';
+            }
+            if (budget < currentRouletteStake) {
+                rouletteSpinButton.disabled = true;
+                rouletteResult.textContent = 'Brak środków! Koniec gry.';
+                rouletteResult.style.color = '#e74c3c';
+            }
+        }
+
+        function setStake(stake) {
+            if (budget >= stake) {
+                currentStake = stake;
+                document.querySelectorAll('.stake').forEach(btn => btn.classList.remove('selected'));
+                event.target.classList.add('selected');
+                spinButton.disabled = false;
+            } else {
+                alert(`Nie masz wystarczającego budżetu na stawkę ${stake} $!`);
+            }
+        }
+
+        function animateReels(callback) {
+            let spins = 0;
+            const maxSpins = 20;
+
+            const interval = setInterval(() => {
+                reel1.textContent = getRandomSymbol();
+                reel2.textContent = getRandomSymbol();
+                reel3.textContent = getRandomSymbol();
+                spins++;
+                if (spins >= maxSpins) {
+                    clearInterval(interval);
+                    callback();
+                }
+            }, 100);
+        }
+
+        function spin() {
+            if (budget < currentStake) {
+                result.textContent = 'Brak środków na zakręcenie!';
+                result.style.color = '#e74c3c';
+                return;
+            }
+
+            budget -= currentStake;
+            updateBudget();
+            spinButton.disabled = true;
+            result.textContent = '';
+
+            animateReels(() => {
+                let finalReel1, finalReel2, finalReel3;
+                const winChance = Math.random();
+
+                if (winChance < 0.5) {
+                    const winningSymbol = getRandomSymbol();
+                    finalReel1 = finalReel2 = finalReel3 = winningSymbol;
+                } else {
+                    finalReel1 = getRandomSymbol();
+                    finalReel2 = getRandomSymbol();
+                    finalReel3 = getRandomSymbol();
+                }
+
+                reel1.textContent = finalReel1;
+                reel2.textContent = finalReel2;
+                reel3.textContent = finalReel3;
+
+                // Add logic to calculate results
+            });
+        }
+
+        // Kod dla ruletki
+        let currentRouletteBet = '';
+        let currentRouletteStake = 10;
+        const rouletteSpinButton = document.getElementById('rouletteSpinButton');
+        const rouletteResult = document.getElementById('roulette-result');
+        const rouletteHistoryList = document.getElementById('historyList');
+
+        function setRouletteBet(bet) {
+            currentRouletteBet = bet;
+            document.querySelectorAll('.roulette-option').forEach(option => option.classList.remove('selected'));
+            event.target.classList.add('selected');
+        }
+
+        function setRouletteStake(stake) {
+            if (budget >= stake) {
+                currentRouletteStake = stake;
+                document.querySelectorAll('.roulette-stake').forEach(btn => btn.classList.remove('selected'));
+                event.target.classList.add('selected');
+                rouletteSpinButton.disabled = false;
+            } else {
+                alert(`Nie masz wystarczającego budżetu na stawkę ${stake} $!`);
+            }
+        }
+
+        function spinRoulette() {
+            if (budget < currentRouletteStake) {
+                rouletteResult.textContent = 'Brak środków na zakręcenie!';
+                rouletteResult.style.color = '#e74c3c';
+                return;
+            }
+
+            budget -= currentRouletteStake;
+            updateBudget();
+            rouletteSpinButton.disabled = true;
+
+            const outcome = ['red', 'black', 'green'][Math.floor(Math.random() * 3)];
+            rouletteDisplay.style.backgroundColor = outcome === 'red' ? '#e74c3c' : outcome === 'black' ? '#2c3e50' : '#27ae60';
+            rouletteDisplay.textContent = outcome.toUpperCase();
+
+            // Add roulette winning logic here
+
+            // Save history
+            const historyItem = document.createElement('li');
+            historyItem.textContent = `Zakład: ${currentRouletteBet}, Wynik: ${outcome}`;
+            rouletteHistoryList.prepend(historyItem);
+            if (rouletteHistoryList.children.length > 5) {
+                rouletteHistoryList.removeChild(rouletteHistoryList.lastElementChild);
+            }
+        }
+    </script>
+</body>
+</html>
